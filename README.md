@@ -8,7 +8,9 @@
 
 Type anything. Your trackpad taps it back in Morse.
 
-[**Download for macOS**](https://github.com/vraj00222/thrum/releases/latest) · Requires macOS 14. Apple silicon and Intel.
+[**thrum-gilt.vercel.app**](https://thrum-gilt.vercel.app) · [**Download for macOS**](https://github.com/vraj00222/thrum/releases/latest)
+
+Requires macOS 14. Apple silicon and Intel.
 
 </div>
 
