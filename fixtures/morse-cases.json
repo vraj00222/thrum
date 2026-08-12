@@ -1,0 +1,53 @@
+{
+  "_comment": "Read by mac/Tests/ThrumCoreTests and web/lib/morse.test.ts. If the app and the web demo disagree about what SOS looks like, the product is broken.",
+  "roundTrip": [
+    { "text": "SOS", "morse": "... --- ..." },
+    { "text": "HELLO WORLD", "morse": ".... . .-.. .-.. --- / .-- --- .-. .-.. -.." },
+    { "text": "E", "morse": "." },
+    { "text": "T", "morse": "-" },
+    { "text": "PARIS", "morse": ".--. .- .-. .. ..." },
+    { "text": "73 DE THRUM", "morse": "--... ...-- / -.. . / - .... .-. ..- --" },
+    { "text": "CQ CQ DE W1AW", "morse": "-.-. --.- / -.-. --.- / -.. . / .-- .---- .- .--" },
+    { "text": "WHY IS THE DIT 240MS", "morse": ".-- .... -.-- / .. ... / - .... . / -.. .. - / ..--- ....- ----- -- ..." },
+    { "text": "HAM RADIO, KEYBOARDS & FEELING THINGS.", "morse": ".... .- -- / .-. .- -.. .. --- --..-- / -.- . -.-- -... --- .- .-. -.. ... / .-... / ..-. . . .-.. .. -. --. / - .... .. -. --. ... .-.-.-" }
+  ],
+  "lowercaseInput": [
+    { "text": "hello world", "morse": ".... . .-.. .-.. --- / .-- --- .-. .-.. -.." }
+  ],
+  "prosigns": [
+    { "text": "<SOS>", "morse": "...---...", "note": "one unit, no inter-character gaps" },
+    { "text": "<AR>", "morse": ".-.-." },
+    { "text": "<BT>", "morse": "-...-" },
+    { "text": "<KN>", "morse": "-.--." },
+    { "text": "MSG <AR>", "morse": "-- ... --. / .-.-." }
+  ],
+  "tokenCounts": [
+    { "text": "E", "tokens": ["dit"] },
+    { "text": "A", "tokens": ["dit", "intraGap", "dah"] },
+    { "text": "EE", "tokens": ["dit", "charGap", "dit"] },
+    { "text": "E E", "tokens": ["dit", "wordGap", "dit"] },
+    { "text": "<AR>", "tokens": ["dit", "intraGap", "dah", "intraGap", "dit", "intraGap", "dah", "intraGap", "dit"] }
+  ],
+  "unsupported": [
+    { "text": "hello", "chars": [] },
+    { "text": "café über", "chars": ["É", "Ü"] },
+    { "text": "100% sure", "chars": ["%"] }
+  ],
+  "timing": [
+    { "wpm": 5, "unitMS": 240, "ditMS": 240, "dahMS": 720, "charGapMS": 720, "wordGapMS": 1680 },
+    { "wpm": 13, "unitMS": 92.3076923076923, "ditMS": 92.3076923076923, "dahMS": 276.9230769230769, "charGapMS": 276.9230769230769, "wordGapMS": 646.1538461538462 },
+    { "wpm": 20, "unitMS": 60, "ditMS": 60, "dahMS": 180, "charGapMS": 180, "wordGapMS": 420 }
+  ],
+  "farnsworth": [
+    {
+      "note": "character speed 15, effective 5. Dit is unchanged at 15 WPM; only the gaps stretch.",
+      "wpm": 15,
+      "farnsworthWPM": 5,
+      "ditMS": 80,
+      "dahMS": 240,
+      "charGapMS": 1503.1578947368419,
+      "wordGapMS": 3507.368421052631,
+      "parisWordSeconds": 12.0
+    }
+  ]
+}
