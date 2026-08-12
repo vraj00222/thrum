@@ -18,26 +18,27 @@ struct ComposerView: View {
                 banner(engineWarning)
             }
 
-            ZStack(alignment: .topLeading) {
-                if text.isEmpty {
-                    Text("Type something. It'll be in your palm in a second.")
-                        .font(Theme.ui(15))
-                        .foregroundStyle(Theme.graphite)
-                        .padding(.top, 8)
-                        .padding(.leading, 5)
-                        .allowsHitTesting(false)
-                }
-                TextEditor(text: $text)
-                    .font(Theme.ui(15))
-                    .foregroundStyle(Theme.ink)
-                    .scrollContentBackground(.hidden)
-                    .focused($editorFocused)
-                    .frame(minHeight: 78)
-                    .accessibilityLabel("Message to send")
-            }
-            .padding(6)
-            .background(RoundedRectangle(cornerRadius: 10).fill(.white.opacity(0.5)))
-            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Theme.rule, lineWidth: 1))
+            // A TextField with a vertical axis, not a TextEditor: the prompt is drawn
+            // by the field itself on the same baseline as the caret, so there's no
+            // overlay to keep in alignment. Return plays instead of inserting a
+            // newline, which is what you want in a one-message composer anyway.
+            TextField("Message", text: $text, prompt: Text("Type something. It'll be in your palm in a second."), axis: .vertical)
+                .textFieldStyle(.plain)
+                .font(Theme.ui(15))
+                .foregroundStyle(Theme.ink)
+                .lineLimit(3...6)
+                .focused($editorFocused)
+                .onSubmit { player.play() }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 12)
+                .background(RoundedRectangle(cornerRadius: 10).fill(.white.opacity(0.55)))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(editorFocused ? Theme.signal.opacity(0.55) : Theme.rule, lineWidth: 1)
+                )
+                .animation(.easeOut(duration: 0.15), value: editorFocused)
+                .accessibilityLabel("Message to send")
+                .accessibilityHint("Press Return to play")
 
             if !unsupported.isEmpty {
                 // Inline and quiet. A modal for a stray character would be absurd.
@@ -47,10 +48,8 @@ struct ComposerView: View {
                     .transition(.opacity)
             }
 
-            TapeView(tokens: player.tokens,
+            TapeView(player: player,
                      timing: settings.timing,
-                     elapsed: player.state == .playing ? player.liveElapsed : player.elapsed,
-                     isPlaying: player.state == .playing,
                      revealAnchor: revealAnchor,
                      revealFrom: revealFrom)
 

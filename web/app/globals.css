@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  --color-tape: #f7f6e9;
+  --color-ink: #16150f;
+  --color-graphite: #6b6a5c;
+  /* Full strength on an actively firing pulse and the playhead. Nowhere else. */
+  --color-signal: #1f3be0;
+  --color-signal-wash: #dce0fc;
+  --color-rule: #e2e1d0;
+
+  --font-display: var(--font-instrument-serif), Georgia, serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-tape);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+/* One visible focus ring, everywhere, on every interactive element. */
+:where(a, button, input, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

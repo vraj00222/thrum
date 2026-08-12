@@ -34,6 +34,9 @@ for bundle in "$BIN"/*.bundle; do
   [ -e "$bundle" ] && cp -R "$bundle" "$APP/Contents/Resources/"
 done
 
+# The icon has to sit loose in Resources; Finder won't look inside the SPM bundle.
+cp mac/Sources/ThrumApp/Resources/Thrum.icns "$APP/Contents/Resources/Thrum.icns"
+
 cat > "$APP/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -42,6 +45,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>CFBundleName</key><string>Thrum</string>
   <key>CFBundleDisplayName</key><string>Thrum</string>
   <key>CFBundleExecutable</key><string>Thrum</string>
+  <key>CFBundleIconFile</key><string>Thrum</string>
   <key>CFBundleIdentifier</key><string>app.thrum.Thrum</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleShortVersionString</key><string>$VERSION</string>

@@ -4,3 +4,6 @@ node_modules/
 .next/
 .vercel/
 *.dmg
+
+dist/
+.playwright-mcp/

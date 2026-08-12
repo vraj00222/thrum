@@ -32,11 +32,45 @@ public final class MorsePlayer {
 
     public var totalDuration: TimeInterval { timing.totalDuration(for: tokens) }
 
-    /// Interpolated playhead position. `elapsed` only moves when a token fires, which
-    /// is once every 240ms at 5 WPM — far too coarse to scroll a tape against.
-    public var liveElapsed: TimeInterval {
-        guard state == .playing, let started = startedAt else { return elapsed }
-        return min(totalDuration, resumeAt + Date().timeIntervalSince(started))
+    /// Where playback started and how far in. Views interpolate against this rather
+    /// than reading `elapsed`, which only moves when a token fires — once every
+    /// 240ms at 5 WPM, far too coarse to scroll a tape against.
+    public struct Anchor: Equatable {
+        public let started: Date
+        public let offset: TimeInterval
+    }
+    public private(set) var anchor: Anchor?
+
+    /// Smooth playhead position at an arbitrary instant. Drives every animated view.
+    public func elapsed(at now: Date) -> TimeInterval {
+        guard state == .playing, let anchor else { return elapsed }
+        return min(totalDuration, anchor.offset + now.timeIntervalSince(anchor.started))
+    }
+
+    public var progress: Double {
+        totalDuration > 0 ? min(1, elapsed / totalDuration) : 0
+    }
+
+    /// Jump to a point in the message, the way you'd scrub a video.
+    public func seek(to time: TimeInterval) {
+        let wasPlaying = state == .playing
+        clock.stop()
+        sidetone.off()
+        anchor = nil
+        resumeAt = min(max(0, time), totalDuration)
+        elapsed = resumeAt
+        tokenIndex = index(at: resumeAt)
+        state = resumeAt >= totalDuration ? .finished : .paused
+        if wasPlaying { play() }
+    }
+
+    private func index(at time: TimeInterval) -> Int {
+        var t: TimeInterval = 0
+        for (i, token) in tokens.enumerated() {
+            t += timing.duration(of: token)
+            if t > time { return i }
+        }
+        return tokens.count - 1
     }
 
     public var tapInterval: TimeInterval {
@@ -72,8 +106,10 @@ public final class MorsePlayer {
         if state == .finished { resumeAt = 0 }
 
         if sidetoneEnabled { try? sidetone.start() }
+        let now = Date()
         state = .playing
-        startedAt = Date()
+        startedAt = now
+        anchor = Anchor(started: now, offset: resumeAt)
 
         let from = resumeAt
         let events = buildEvents(startingAt: from)
@@ -84,6 +120,7 @@ public final class MorsePlayer {
             DispatchQueue.main.async {
                 self.sidetone.off()
                 if completed {
+                    self.anchor = nil
                     self.state = .finished
                     self.elapsed = total
                     self.resumeAt = 0
@@ -96,8 +133,9 @@ public final class MorsePlayer {
         guard state == .playing else { return }
         clock.stop()
         sidetone.off()
-        resumeAt += Date().timeIntervalSince(startedAt ?? Date())
-        elapsed = min(resumeAt, totalDuration)
+        resumeAt = min(resumeAt + Date().timeIntervalSince(startedAt ?? Date()), totalDuration)
+        elapsed = resumeAt
+        anchor = nil
         state = .paused
     }
 
@@ -105,7 +143,8 @@ public final class MorsePlayer {
         clock.stop()
         sidetone.off()
         sidetone.stop()
-        state = tokens.isEmpty ? .idle : .idle
+        anchor = nil
+        state = .idle
         tokenIndex = -1
         elapsed = 0
         resumeAt = 0
