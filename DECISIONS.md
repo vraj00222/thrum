@@ -39,3 +39,31 @@ instead of fighting it. 15/16 are available in the picker.
 per-tap. Consequence: `HapticEngine.prepare()` must fire one throwaway actuation to warm
 the path, or the first dit of every message lands late. Absolute-deadline scheduling
 holds after that: 24 taps at 30ms landed at 694.3ms against a 690ms target.
+
+## Phase 2
+
+**The tape lays out in time, not in dit-units.** Each bar's width is `duration x
+pixelsPerSecond` and the scroll offset is `elapsed x pixelsPerSecond` — the same
+number drives both, so the bars and the playhead physically cannot drift apart. Under
+standard timing this still yields the required 1:3 proportions for free. It also makes
+Farnsworth honest: the gaps visibly stretch, because that is what you're hearing.
+
+**Rendered with `Canvas`, not a stack of `Rectangle`s.** Views would give per-bar
+SwiftUI transitions for the stagger-in, but a long message is several hundred bars
+scrolling at 60fps. The stagger is done in the draw call instead, from one anchor
+timestamp plus a per-index delay — about fifteen lines, and one rendering path rather
+than two that can disagree.
+
+**The hotkey reads the pasteboard, and only synthesises Cmd-C when Accessibility
+access has been granted.** The brief asks for "the current selection", but no API
+reads another app's selection without that permission. Rather than demand it at first
+launch, Thrum uses the clipboard (the common case — you already hit Cmd-C) and
+Settings offers the upgrade with an explanation. Falls back to whatever is on the
+pasteboard if the synthesised copy yields nothing.
+
+**Global hotkey via Carbon `RegisterEventHotKey`.** Deprecated, but it is still the
+only way to get a system-wide hotkey without Accessibility permission. `NSEvent`'s
+global monitor requires it; the daily loop shouldn't start with a permission wall.
+
+**No app icon yet.** Ships with the generic placeholder. Worth a real mark before
+release, but it blocks nothing.

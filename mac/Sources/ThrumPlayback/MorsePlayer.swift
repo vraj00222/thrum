@@ -31,6 +31,14 @@ public final class MorsePlayer {
     @ObservationIgnored private var startedAt: Date?
 
     public var totalDuration: TimeInterval { timing.totalDuration(for: tokens) }
+
+    /// Interpolated playhead position. `elapsed` only moves when a token fires, which
+    /// is once every 240ms at 5 WPM — far too coarse to scroll a tape against.
+    public var liveElapsed: TimeInterval {
+        guard state == .playing, let started = startedAt else { return elapsed }
+        return min(totalDuration, resumeAt + Date().timeIntervalSince(started))
+    }
+
     public var tapInterval: TimeInterval {
         get { shaper.tapInterval }
         set { shaper.tapInterval = newValue }
