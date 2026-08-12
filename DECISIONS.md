@@ -67,3 +67,16 @@ global monitor requires it; the daily loop shouldn't start with a permission wal
 
 **No app icon yet.** Ships with the generic placeholder. Worth a real mark before
 release, but it blocks nothing.
+
+## Phase 4
+
+**Dropped the root `pnpm-workspace.yaml`.** The brief asked for a pnpm workspace, but
+there is exactly one JS package and the lockfile had landed in `web/` anyway, so the
+workspace file was decorative — it declared a workspace pnpm wasn't using. `web/` is
+now self-contained, which also means Vercel deploys it without a root-directory
+override. Re-add it the day a second JS package exists.
+
+**Mac app ships unsigned.** No Apple Developer membership, so `notarize.sh` isn't
+written and `make release` stops at `gh release create`. The README and the landing
+page both carry the `xattr -dr com.apple.quarantine` step rather than letting people
+hit Gatekeeper cold.
